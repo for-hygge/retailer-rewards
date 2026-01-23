@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Retailer Rewards Demo</title>
+</head>
+<body>
+    <h2>Retailer Rewards</h2>
+
+    <h3>1) View All Customers</h3>
+    <button id="btnLoad">Load Customers</button>
+
+    <hr>
+
+    <h3>2) Create Customer</h3>
+    <div>
+        <label>Name: </label>
+        <input id="newName" />
+    </div>
+    <button id="btnCreate">Create</button>
+
+    <hr>
+
+    <h3>3) Add Purchase & Update Rewards</h3>
+    <div>
+        <label>Customer ID: </label>
+        <input id="custId" type="number" />
+    </div>
+    <div>
+        <label>Month (1-12): </label>
+        <input id="month" type="number" min="1" max="12" step="1" required />
+    </div>
+    <div>
+        <label>Purchase: </label>
+        <input id="purchase" type="number" min="0" step="1" required />
+    </div>
+    <button id="btnUpdate">Submit Purchase</button>
+
+    <hr>
+
+    <h3>Response</h3>
+    <pre id="out"></pre>
+
+    <script>
+        const BASE_URL = "";
+        const out = document.getElementById("out");
+
+        function show(x) {
+            out.textContent = typeof x === "string" ? x : JSON.stringify(x, null, 2);
+        }
+
+        async function request(url, options) {
+            try {
+                const res = await fetch(url, options);
+                const text = await res.text();
+                if (!res.ok) {
+                    throw new Error(`${res.status} ${res.statusText}\n${text}`);
+                }
+                try { return JSON.parse(text); } catch { return text; }
+            } catch (e) {
+                show("Error: " + e.message);
+                throw e;
+            }
+        }
+
+        document.getElementById("btnLoad").onclick = async () => {
+            const data = await request(`${BASE_URL}/retailer-rewards/customers`);
+            show(data);
+        };
+
+        document.getElementById("btnCreate").onclick = async () => {
+            const name = document.getElementById("newName").value.trim();
+            if (!name) {
+                show("Error: Customer name cannot be empty.");
+                return;
+            }
+            const body = {
+                name
+            };
+            const data = await request(`${BASE_URL}/retailer-rewards/customer`, {
+                method: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify(body)
+            });
+            show(data);
+        };
+
+        document.getElementById("btnUpdate").onclick = async () => {
+            const id = Number(document.getElementById("custId").value);
+            if (!Number.isInteger(id) || id <= 0) {
+                show("Error: Id must be an integer greater than 0.");
+                return;
+            }
+            const month = Number(document.getElementById("month").value);
+            if (!Number.isInteger(month) || month < 1 || month > 12) {
+                show("Error: Month must be an integer between 1 and 12.");
+                return;
+            }
+            const purchase = Number(document.getElementById("purchase").value);
+            if (Number.isNaN(purchase) || purchase < 0) {
+                show("Error: Purchase must be >= 0.");
+                return;
+            }
+            const body = {
+                transactionMonth: month,
+                purchase,
+            };
+            const data = await request(`${BASE_URL}/retailer-rewards/rewards/${id}`, {
+                method: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify(body)
+            });
+            show(data);
+        };
+    </script>
+</body>
+</html>
