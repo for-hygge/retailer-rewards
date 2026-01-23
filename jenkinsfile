@@ -1,0 +1,47 @@
+pipeline {
+  agent any
+
+  parameters {
+    string(name: 'EC2_HOST', defaultValue: '', description: 'EC2 public IP')
+  }
+
+  environment {
+    EC2_USER = "ubuntu"
+    SSH_CRED = "ec2-ssh-key"
+    JAR_NAME = "retailer-rewards-0.0.1-SNAPSHOT.jar"
+  }
+
+  stages {
+    stage("Checkout") {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage("Build") {
+      steps {
+        sh '''
+          set -e
+          if [ -f "./mvnw" ]; then
+            ./mvnw -DskipTests clean package
+          else
+            mvn -DskipTests clean package
+          fi
+        '''
+      }
+    }
+
+    stage("Deploy") {
+      steps {
+        sshagent(credentials: [env.SSH_CRED]) {
+          sh '''
+            set -e
+            if [ -z "${EC2_HOST}" ]; then exit 1; fi
+            scp -o StrictHostKeyChecking=no target/${JAR_NAME} ${EC2_USER}@${EC2_HOST}:/opt/demo/app.jar
+            ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "sudo systemctl restart demo"
+          '''
+        }
+      }
+    }
+  }
+}
