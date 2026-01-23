@@ -23,6 +23,7 @@ pipeline {
         sh '''
           set -e
           if [ -f "./mvnw" ]; then
+            chmod +x ./mvnw
             ./mvnw -DskipTests clean package
           else
             mvn -DskipTests clean package
