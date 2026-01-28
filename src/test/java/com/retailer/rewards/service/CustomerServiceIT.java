@@ -29,7 +29,6 @@ class CustomerServiceIT {
         assertThat(result).hasSize(2);
         assertThat(result).extracting(CustomerRewardsResponse::id)
                 .containsExactlyInAnyOrder(c1.getId(), c2.getId());
-
         assertThat(result).extracting(CustomerRewardsResponse::name)
                 .containsExactlyInAnyOrder("A", "B");
     }

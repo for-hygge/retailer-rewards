@@ -29,6 +29,11 @@ class RewardServiceIT {
         req.setPurchase(120);
 
         CustomerRewardsResponse resp = rewardService.updateRewards(req, c.getId());
+        assertThat(resp.totalPurchase()).isEqualTo(120);
+        assertThat(resp.totalRewards()).isEqualTo(90);
+        assertThat(resp.transactions()).hasSize(1);
+        assertThat(resp.transactions().get(0).transactionMonth()).isEqualTo(3);
+        assertThat(resp.transactions().get(0).rewardsPerMonth()).isEqualTo(90);
 
         Customer fromDb = customerRepository.findById(c.getId()).orElseThrow();
         assertThat(fromDb.getTotalPurchase()).isEqualTo(120);
@@ -41,12 +46,6 @@ class RewardServiceIT {
         assertThat(tx.getPurchase()).isEqualTo(120);
         assertThat(tx.getAddedPoints()).isEqualTo(90);
         assertThat(tx.getCustomer().getId()).isEqualTo(c.getId());
-
-        assertThat(resp.totalPurchase()).isEqualTo(120);
-        assertThat(resp.totalRewards()).isEqualTo(90);
-        assertThat(resp.transactions()).hasSize(1);
-        assertThat(resp.transactions().get(0).transactionMonth()).isEqualTo(3);
-        assertThat(resp.transactions().get(0).rewardsPerMonth()).isEqualTo(90);
     }
 
     @Test
