@@ -1,8 +1,6 @@
 package com.retailer.rewards.service;
 
 import com.retailer.rewards.DTO.CustomerRewardsResponse;
-import com.retailer.rewards.DTO.MonthlyTransaction;
-import com.retailer.rewards.DTO.TransactionDetail;
 import com.retailer.rewards.DTO.UpdateRewards;
 import com.retailer.rewards.Entity.Customer;
 import com.retailer.rewards.Entity.Transaction;
