@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -91,7 +90,6 @@ class RewardServiceTest {
 
         when(customerRepository.findById(id)).thenReturn(Optional.of(customer));
         when(helper.calculateRewards(120)).thenReturn(90);
-
         when(customerRepository.findWithTransactionsById(id)).thenReturn(Optional.of(customer));
 
         CustomerRewardsResponse expected =
