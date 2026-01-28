@@ -79,7 +79,7 @@ class RewardServiceTest {
     }
 
     @Test
-    void updateRewards_shouldAddTransaction_updateTotals_save_andReturnResponse() {
+    void updateRewards_happyPath() {
         Long id = 1L;
 
         UpdateRewards req = new UpdateRewards();
